@@ -847,7 +847,8 @@
                 `<p class="text-lg"><strong>รหัสนักศึกษา:</strong> ${student.id}</p>` +
                 `<p class="text-lg"><strong>ชื่อ-สกุล:</strong> ${student.name}</p>` +
                 `<p class="text-lg"><strong>ระดับชั้น:</strong> ${gradeDisplay}</p>` +
-                `<p class="text-lg"><strong>สาขา:</strong> ${student.major || 'ไม่ระบุ'}</p>`;
+                `<p class="text-lg"><strong>สาขา:</strong> ${student.major || 'ไม่ระบุ'}</p>` +
+                `<p class="text-lg"><strong>แผนการเรียน:</strong> ${student.plan || 'ไม่ระบุ'}</p>`; // เพิ่มส่วนนี้
             
             showPage('info-page');
             
