@@ -95,9 +95,7 @@
             <h1 class="text-3xl font-bold text-purple-800">ระบบบันทึกเข้าเรียน</h1>
             <p class="text-gray-600 mb-6 text-lg">ปวช.ศูนย์ส่งเสริมการเรียนรู้ระดับอำเภอเมืองนครราชสีมา</p>
             
-            <!-- (REMOVED) Datetime display from Page 1 -->
-            
-            <div class="border border-purple-200 rounded-lg p-6 text-left bg-purple-50 mt-6"> <!-- Added mt-6 for spacing -->
+            <div class="border border-purple-200 rounded-lg p-6 text-left bg-purple-50 mt-6"> 
                 <h2 class="text-2xl font-semibold text-center text-purple-700 mb-4 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
@@ -143,7 +141,6 @@
             </div>
 
             <div class="mb-6">
-                <!-- (KEPT) Datetime display on Page 2 -->
                 <div id="info-datetime-display" class="text-xl text-gray-700 font-semibold text-center mb-4 bg-gray-50 p-3 rounded-lg">
                     <span id="info-date-span"></span> | <span id="info-time-span"></span>
                 </div>
@@ -158,13 +155,18 @@
                 บันทึกการเข้าเรียน
             </h3>
 
-            <!-- (NEW) Message for duplicate entry on today's date -->
-            <div id="attendance-lock-message" class="hidden text-center p-4 mb-4 bg-red-100 border border-red-300 text-red-700 rounded-lg">
-                <p class="font-bold text-lg">บันทึกข้อมูลสำหรับวันนี้ไปแล้ว</p>
-                <p id="attendance-lock-details"></p> 
+            <!-- Message for duplicate entry on today's date -->
+            <div id="attendance-lock-message" class="hidden text-center p-4 mb-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-r-lg shadow-sm">
+                <div class="flex items-center justify-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <span class="font-bold text-lg">บันทึกข้อมูลสำหรับวันนี้ไปแล้ว</span>
+                </div>
+                <p id="attendance-lock-details" class="text-sm bg-white bg-opacity-50 p-2 rounded"></p> 
             </div>
 
-            <!-- (MODIFIED) Wrapper for attendance controls -->
+            <!-- Wrapper for attendance controls -->
             <div id="attendance-controls" class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <button id="present-btn" data-status="มาเรียน" class="attendance-btn bg-amber-500 text-white font-bold py-3 rounded-lg hover:bg-amber-600 transition-colors flex items-center justify-center space-x-2">
@@ -194,7 +196,6 @@
                     <div id="save-loader" class="loader hidden"></div>
                 </button>
             </div>
-            <!-- (End modified wrapper) -->
 
             <button id="back-btn" class="w-full bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 mt-2 flex items-center justify-center space-x-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -225,7 +226,6 @@
             <div class="mb-4">
                 <h3 class="text-xl font-semibold text-gray-700 mb-3">สรุปข้อมูล (วันนี้)</h3>
                 <div id="admin-summary" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <!-- Summary cards will be injected here -->
                     <div class="bg-gray-100 p-4 rounded-lg shadow border border-gray-200 animate-pulse">
                         <p class="text-sm text-gray-700 font-semibold">กำลังโหลด...</p>
                         <p class="text-3xl font-bold text-gray-900">...</p>
@@ -237,7 +237,6 @@
             <div class="border-t pt-6">
                  <h3 class="text-xl font-semibold text-gray-700 mb-4">เครื่องมือผู้ดูแล</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <!-- (NEW) Search History Button -->
                     <button id="admin-history-btn" class="w-full bg-indigo-600 text-white font-bold py-4 px-4 rounded-lg hover:bg-indigo-700 flex items-center justify-center space-x-2">
                         <span>
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20" fill="currentColor">
@@ -247,7 +246,6 @@
                         </span>
                     </button>
                     
-                    <!-- Live Monitor Button -->
                     <button id="admin-live-monitor-btn" class="w-full bg-blue-600 text-white font-bold py-4 px-4 rounded-lg hover:bg-blue-700 flex items-center justify-center space-x-2">
                         <span id="admin-live-monitor-text">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20" fill="currentColor">
@@ -258,7 +256,6 @@
                         </span>
                     </button>
                     
-                    <!-- (NEW) Approval Button -->
                     <button id="admin-approval-btn" class="w-full bg-green-600 text-white font-bold py-4 px-4 rounded-lg hover:bg-green-700 flex items-center justify-center space-x-2">
                         <span id="admin-approval-text">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20" fill="currentColor">
@@ -267,10 +264,8 @@
                             <span>อนุมัติการเข้าเรียน (วันนี้)</span>
                         </span>
                     </button>
-                    <!-- (End New Button) -->
                 </div>
                 
-                <!-- (MODIFIED) Export All Button (moved to its own row for layout) -->
                 <div class="mt-4">
                     <button id="admin-export-btn" class="w-full bg-gray-700 text-white font-bold py-4 px-4 rounded-lg hover:bg-gray-800 flex items-center justify-center space-x-2">
                         <span id="admin-export-text">
@@ -327,8 +322,6 @@
                     </div>
                 </div>
             </div>
-            <!-- (END NEW) -->
-
 
             <div class="flex justify-between items-center mb-4 bg-gray-50 p-3 rounded-lg border-t pt-4">
                 <h3 class="text-xl font-semibold text-gray-700">รายการเข้าเรียน (อัปเดตทุก 5 วินาที)</h3>
@@ -338,13 +331,11 @@
                 </div>
             </div>
             
-            <!-- (MODIFIED) Single Feed Layout -->
             <div class="bg-gray-50 rounded-lg shadow-inner max-h-[50vh] overflow-y-auto p-4 space-y-3">
                 <div id="monitor-feed-list">
                     <!-- New feed items will be injected here by JS -->
                 </div>
             </div>
-            <!-- (REMOVED) Old 2-column layout -->
         </div>
         
         <!-- Page 5: History Search Page (Unchanged) -->
@@ -449,7 +440,7 @@
             <p id="history-no-data" class="text-center text-gray-500 py-8 hidden">ไม่พบข้อมูลในข่วงวันที่ที่เลือก</p>
         </div>
         
-        <!-- (NEW) Page 6: Approval Page -->
+        <!-- Page 6: Approval Page -->
         <div id="approval-page" class="page bg-white p-8 rounded-xl shadow-2xl transition-all border-t-4 border-green-700">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-bold text-green-800 flex items-center">
@@ -500,7 +491,6 @@
             </div>
             <p id="approval-no-data" class="text-center text-gray-500 py-8 hidden">ไม่พบข้อมูลที่รอการอนุมัติ</p>
         </div>
-        <!-- (END NEW) Page 6 -->
         
     </div>
 
@@ -523,7 +513,6 @@
         const studentIdInput = document.getElementById('student-id-input');
         const searchLoader = document.getElementById('search-loader');
         const searchBtnText = document.getElementById('search-btn-text');
-        // (REMOVED) const dateSpan, timeSpan
         const adminAccessBtn = document.getElementById('admin-access-btn');
 
         // --- Page 2: Info ---
@@ -535,11 +524,12 @@
         const backBtn = document.getElementById('back-btn');
         const saveLoader = document.getElementById('save-loader');
         const saveBtnText = document.getElementById('save-btn-text');
-        const infoDateSpan = document.getElementById('info-date-span'); // (KEPT)
-        const infoTimeSpan = document.getElementById('info-time-span'); // (KEPT)
+        const infoDateSpan = document.getElementById('info-date-span'); 
+        const infoTimeSpan = document.getElementById('info-time-span'); 
         const attendanceDateInput = document.getElementById('attendance-date-input');
         const showHistoryBtn = document.getElementById('show-history-btn');
-        // (NEW) Get new elements for page 2 lock
+        
+        // (NEW) Elements for page 2 lock
         const attendanceControls = document.getElementById('attendance-controls'); 
         const attendanceLockMessage = document.getElementById('attendance-lock-message');
         const attendanceLockDetails = document.getElementById('attendance-lock-details');
@@ -552,16 +542,15 @@
         const adminBackBtn = document.getElementById('admin-back-btn');
         const adminLiveMonitorBtn = document.getElementById('admin-live-monitor-btn');
         const adminHistoryBtn = document.getElementById('admin-history-btn'); 
-        const adminApprovalBtn = document.getElementById('admin-approval-btn'); // (NEW)
+        const adminApprovalBtn = document.getElementById('admin-approval-btn');
 
-        // --- Page 4: Monitor (MODIFIED) ---
+        // --- Page 4: Monitor ---
         const monitorPage = document.getElementById('monitor-page');
         const monitorBackBtn = document.getElementById('monitor-back-btn');
         const monitorLoader = document.getElementById('monitor-loader');
         const monitorLastUpdated = document.getElementById('monitor-last-updated');
-        const monitorFeedList = document.getElementById('monitor-feed-list'); // (MODIFIED)
-        const monitorSummary = document.getElementById('monitor-summary'); // (NEW)
-        // (REMOVED) monitorPresentList, monitorLateList
+        const monitorFeedList = document.getElementById('monitor-feed-list'); 
+        const monitorSummary = document.getElementById('monitor-summary'); 
 
         // --- Page 5: History Search ---
         const historyPage = document.getElementById('history-page');
@@ -583,7 +572,7 @@
         const historyExportCsvLoader = document.getElementById('history-export-csv-loader'); 
         const historyBackBtn = document.getElementById('history-back-btn');
 
-        // --- (NEW) Page 6: Approval ---
+        // --- Page 6: Approval ---
         const approvalPage = document.getElementById('approval-page');
         const approvalBackBtn = document.getElementById('approval-back-btn');
         const approvalReloadBtn = document.getElementById('approval-reload-btn');
@@ -600,11 +589,11 @@
 
             mainContainer.classList.remove('max-w-lg', 'max-w-5xl', 'max-w-7xl'); 
             if (pageId === 'admin-page') {
-                mainContainer.classList.add('max-w-5xl'); // Dashboard page
-            } else if (pageId === 'monitor-page' || pageId === 'history-page' || pageId === 'approval-page') { // (MODIFIED)
+                mainContainer.classList.add('max-w-5xl'); 
+            } else if (pageId === 'monitor-page' || pageId === 'history-page' || pageId === 'approval-page') { 
                 mainContainer.classList.add('max-w-7xl');
             } else {
-                mainContainer.classList.add('max-w-lg'); // Search, Info
+                mainContainer.classList.add('max-w-lg');
             }
         }
         
@@ -644,9 +633,7 @@
                 adminExportBtn.disabled = isLoading;
             } else if (buttonType === 'monitor') {
                 monitorLoader.classList.toggle('hidden', !isLoading);
-            } 
-            // History Page Loaders
-            else if (buttonType === 'history-load') {
+            } else if (buttonType === 'history-load') {
                 historyLoadLoader.classList.toggle('hidden', !isLoading);
                 historyLoadText.classList.toggle('hidden', isLoading);
                 historyLoadBtn.disabled = isLoading;
@@ -658,9 +645,7 @@
                 historyExportCsvLoader.classList.toggle('hidden', !isLoading);
                 historyExportCsvText.classList.toggle('hidden', isLoading);
                 historyExportCsvBtn.disabled = isLoading;
-            }
-            // (NEW) Approval Page Loader
-            else if (buttonType === 'approval-reload') {
+            } else if (buttonType === 'approval-reload') {
                 approvalReloadLoader.classList.toggle('hidden', !isLoading);
                 approvalReloadText.classList.toggle('hidden', isLoading);
                 approvalReloadBtn.disabled = isLoading;
@@ -679,21 +664,19 @@
             attendanceDateInput.value = '';
             if (infoClockInterval) clearInterval(infoClockInterval);
 
-            // (NEW) Reset the lock message and show controls
             attendanceLockMessage.classList.add('hidden');
             attendanceControls.classList.remove('hidden');
             attendanceDateInput.disabled = false;
-            attendanceLockDetails.innerHTML = ''; // Clear details
+            attendanceLockDetails.innerHTML = '';
         }
         
         async function callApi(payload) {
             if (WEB_APP_URL === 'YOUR_NEW_WEB_APP_URL_GOES_HERE') {
-                showAlert('ตั้งค่าไม่ถูกต้อง', 'กรุณาตั้งค่า WEB_APP_URL ในไฟล์ HTML (บรรทัดที่ 200) ก่อน โดยทำตามขั้นตอนในไฟล์ README.md', 'error');
+                showAlert('ตั้งค่าไม่ถูกต้อง', 'กรุณาตั้งค่า WEB_APP_URL ในไฟล์ HTML (บรรทัดที่ 200) ก่อน', 'error');
                 return { success: false, error: 'Configuration needed' };
             }
             try {
                 const urlWithCacheBust = WEB_APP_URL + '?v=' + new Date().getTime();
-
                 const res = await fetch(urlWithCacheBust, {
                     method: 'POST',
                     mode: 'cors',
@@ -702,36 +685,28 @@
                     body: JSON.stringify(payload),
                     redirect: 'follow'
                 });
-
                 const responseText = await res.text();
                 if (!res.ok) throw new Error(`Server responded with status ${res.status}: ${responseText}`);
-                
                 try {
                     return JSON.parse(responseText);
                 } catch (e) {
-                    console.error("Failed to parse JSON response:", responseText);
                     throw new Error("Received an invalid response from the server.");
                 }
-
             } catch (error) {
-                console.error('API Call Error:', error);
-                showAlert('การเชื่อมต่อล้มเหลว', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ตและลองอีกครั้ง');
+                showAlert('การเชื่อมต่อล้มเหลว', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้');
                 return { success: false, error: error.message };
             }
         }
         
-        // (MODIFIED) This function now only updates the clock on the info page
         function updateDateTime(dateEl, timeEl) {
             const now = new Date();
             const dateOptions = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
             const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            
             dateEl.textContent = now.toLocaleDateString('th-TH', dateOptions);
             timeEl.textContent = "เวลา " + now.toLocaleTimeString('th-TH', timeOptions);
         }
         
         // --- Page 1 Logic ---
-        // (REMOVED) Clock update for Page 1
         
         searchBtn.addEventListener('click', async () => {
             const studentId = studentIdInput.value.trim();
@@ -740,17 +715,13 @@
                 return;
             }
             showLoading('search', true);
-            // (MODIFIED) Add 'checkToday' flag to tell the server to check for today's record
             const response = await callApi({ 
                 action: 'getStudentData', 
                 studentId: studentId,
-                checkToday: true // (NEW)
+                checkToday: true // Tells server to check for today's record
             });
             showLoading('search', false);
             
-            // หมายเหตุ: การตรวจสอบการเข้าเรียนซ้ำจะเกิดขึ้นที่ฝั่งเซิร์ฟเวอร์
-            // เมื่อกด "บันทึกข้อมูล" เพื่อให้รองรับการเลือกวันที่ย้อนหลัง
-            // ส่วนนี้จะค้นหาข้อมูลนักศึกษาตามปกติ
             if (response.success) {
                 onStudentFound(response.data);
             } else if (response.error && !response.error.includes('Failed to fetch')) {
@@ -780,10 +751,7 @@
             const todayStr = toYYYYMMDD(now);
 
             if (!selectedDateStr || selectedDateStr === todayStr) {
-                // --- (MODIFIED) เปลี่ยนเวลาสายเป็น 09.00 น. ---
-                // เวลาเข้าเรียนสายคือตั้งแต่ 09:00:00 น. เป็นต้นไป
                 isLate = now.getHours() >= 9;
-                // --- (END MODIFIED) ---
             }
             
             let finalStatus = selectedStatus;
@@ -793,7 +761,7 @@
 
             let finalTimestamp;
             if (selectedDateStr) {
-                const timeString = now.toTimeString().split(' ')[0]; // HH:MM:SS
+                const timeString = now.toTimeString().split(' ')[0];
                 finalTimestamp = `${selectedDateStr}T${timeString}`; 
             } else {
                 finalTimestamp = now.toISOString();
@@ -813,13 +781,12 @@
             if (response.success) {
                 onRecordSaved(response, attendanceData);
             } else {
-                // --- (NEW) ตรวจจับข้อผิดพลาดการบันทึกซ้ำ ---
+                // (Safety Net) Handle duplicate entry if UI bypass occurred
                 if (response.error === 'DUPLICATE_ENTRY' && response.data) {
-                    onDuplicateEntry(response.data); // ส่งข้อมูลที่ซ้ำไปแสดง
+                    onDuplicateEntry(response.data);
                 } else {
                     onSaveFailure({ message: response.error });
                 }
-                // --- (END NEW) ---
             }
         });
 
@@ -848,40 +815,52 @@
                 `<p class="text-lg"><strong>ชื่อ-สกุล:</strong> ${student.name}</p>` +
                 `<p class="text-lg"><strong>ระดับชั้น:</strong> ${gradeDisplay}</p>` +
                 `<p class="text-lg"><strong>สาขา:</strong> ${student.major || 'ไม่ระบุ'}</p>` +
-                `<p class="text-lg"><strong>แผนการเรียน:</strong> ${student.plan || 'ไม่ระบุ'}</p>`; // เพิ่มส่วนนี้
+                `<p class="text-lg"><strong>แผนการเรียน:</strong> ${student.plan || 'ไม่ระบุ'}</p>`;
             
             showPage('info-page');
             
-            // (KEPT) Start clock for info-page
             updateDateTime(infoDateSpan, infoTimeSpan);
             infoClockInterval = setInterval(() => updateDateTime(infoDateSpan, infoTimeSpan), 1000);
 
-            // (NEW) Check for today's record
+            // (UPDATED) Check for today's record and ALERT if found
             if (student.todaysRecord) {
-                // --- (NEW) Found a record for today ---
                 const record = student.todaysRecord;
                 const time = new Date(record.timestamp).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' });
 
-                // Format the message
                 let statusClass = '';
                 if (record.status.includes('สาย')) statusClass = 'text-red-600 font-bold';
                 else if (record.status === 'ลา') statusClass = 'text-orange-600 font-bold';
                 else statusClass = 'text-blue-600 font-bold';
                 
+                // Set the inline message
                 attendanceLockDetails.innerHTML = `
-                    สถานะ: <span class="${statusClass}">${record.status}</span> (เวลา ${time} น.)
-                    ${record.reason ? `<br>เหตุผล: ${record.reason}` : ''}
+                    <div class="mt-2">
+                        สถานะ: <span class="${statusClass}">${record.status}</span> (เวลา ${time} น.)
+                        ${record.reason ? `<br>เหตุผล: ${record.reason}` : ''}
+                    </div>
                 `;
                 
-                // Show the lock message, hide the controls
+                // Show the lock UI
                 attendanceLockMessage.classList.remove('hidden');
                 attendanceControls.classList.add('hidden');
-                
-                // Also disable the date input, as it's irrelevant now for this page
-                attendanceDateInput.disabled = true;
+                attendanceDateInput.disabled = true; // Lock date input
+
+                // (NEW) Trigger SweetAlert Popup immediately
+                Swal.fire({
+                    icon: 'info',
+                    title: 'บันทึกข้อมูลแล้ว',
+                    html: `
+                        <p class="mb-2">นักศึกษารหัส <b>${student.id}</b></p>
+                        <p>ได้ทำการบันทึกการเข้าเรียนวันนี้ไปแล้ว</p>
+                        <p class="mt-2 text-sm text-gray-600">สถานะ: <b>${record.status}</b></p>
+                        <p class="text-sm text-gray-600">เวลา: ${time} น.</p>
+                    `,
+                    confirmButtonText: 'รับทราบ',
+                    confirmButtonColor: '#7C3AED'
+                });
 
             } else {
-                // --- (NEW) No record for today, show controls as normal ---
+                // No record for today, show controls as normal
                 attendanceLockMessage.classList.add('hidden');
                 attendanceControls.classList.remove('hidden');
                 attendanceDateInput.disabled = false;
@@ -889,15 +868,13 @@
         }
 
         async function showStudentHistoryModal() {
-            if (!currentStudent) return; // Safety check
+            if (!currentStudent) return; 
 
             Swal.fire({
                 title: 'กำลังโหลดประวัติ...',
                 text: 'กรุณารอสักครู่',
                 allowOutsideClick: false,
-                didOpen: () => {
-                    Swal.showLoading();
-                }
+                didOpen: () => { Swal.showLoading(); }
             });
 
             const response = await callApi({
@@ -1018,7 +995,7 @@
             });
         }
         
-        // --- (NEW) ฟังก์ชันสำหรับแจ้งเตือนการบันทึกซ้ำ ---
+        // (NEW) Alert for duplicate entry response
         function onDuplicateEntry(record) {
             const recordDate = new Date(record.timestamp);
             const dateStr = recordDate.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -1030,7 +1007,7 @@
             else statusClass = 'text-blue-600 font-bold';
 
             const html = `
-                <p class="text-lg">ไม่สามารถบันทึกซ้ำได้</p>
+                <p class="text-lg text-red-600 font-bold mb-2">ไม่สามารถบันทึกซ้ำได้</p>
                 <p class="text-base mb-4">พบข้อมูลที่ถูกบันทึกไว้สำหรับวันที่ <strong>${dateStr}</strong> แล้ว:</p>
                 <div class="text-left p-3 bg-gray-50 rounded-lg border">
                     <p><strong>สถานะ:</strong> <span class="${statusClass}">${record.status}</span></p>
@@ -1045,7 +1022,6 @@
                 html: html,
                 confirmButtonText: 'ตกลง'
             }).then(() => {
-                // รีเซ็ตการเลือกบนหน้าจอ แต่ไม่กลับไปหน้าแรก
                 selectedStatus = null;
                 presentBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-amber-500'); 
                 absentBtn.classList.remove('ring-2', 'ring-offset-2', 'ring-orange-500'); 
@@ -1054,7 +1030,6 @@
                 saveBtn.disabled = true;
             });
         }
-        // --- (END NEW) ---
 
         function onSaveFailure(error) {
             showAlert('บันทึกไม่สำเร็จ', error.message || 'ไม่สามารถบันทึกข้อมูลได้ กรุณาลองใหม่อีกครั้ง');
@@ -1173,7 +1148,6 @@
                     link.click();
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
-                    
                 } catch (e) {
                     showAlert('ส่งออกล้มเหลว', 'เกิดข้อผิดพลาดในการสร้างไฟล์: ' + e.message);
                 }
@@ -1182,7 +1156,7 @@
             }
         });
         
-        // --- Page 4 Monitor Logic (MODIFIED) ---
+        // --- Page 4 Monitor Logic ---
 
         adminLiveMonitorBtn.addEventListener('click', () => {
             showPage('monitor-page');
@@ -1226,11 +1200,7 @@
             monitorLastUpdated.textContent = `อัปเดตล่าสุด: ${now.toLocaleTimeString('th-TH')}`;
         }
 
-        // (MODIFIED) Function to display data in the new single feed
-        // This function now also calculates and displays the summary
         function displayMonitorData(records) {
-            
-            // --- (NEW) Calculate Summary from records ---
             let present = 0;
             let late = 0;
             let absent = 0;
@@ -1239,7 +1209,7 @@
                 for (const record of records) {
                     if (record.status.includes('สาย')) {
                         late++;
-                    } else if (record.status.includes('มาเรียน')) { // Catches "มาเรียน"
+                    } else if (record.status.includes('มาเรียน')) {
                         present++;
                     } else if (record.status === 'ลา') {
                         absent++;
@@ -1247,12 +1217,8 @@
                 }
             }
             const total = present + late + absent;
-            // Display the calculated summary
             displayMonitorSummary({ present, late, absent, total });
-            // --- (END NEW) ---
 
-
-            // --- Existing Feed List Logic ---
             monitorFeedList.innerHTML = ''; 
             
             if (!records || records.length === 0) {
@@ -1292,7 +1258,6 @@
                     `;
                 }
                 
-                // 'ลา' (Absent) will not be shown in live monitor, so we only handle the two cases above.
                 if(statusText) {
                     const cardHtml = `
                         <div class="monitor-card bg-white p-4 rounded-xl shadow-lg border-l-8 ${borderColor} flex items-center space-x-4">
@@ -1303,7 +1268,7 @@
                                 <p class="text-xl font-bold text-gray-800">${record.name}</p>
                                 <p class="text-base text-gray-500">รหัส: ${record.studentId}</p>
                             </div>
-                            <div class="text-right flex-shrink-0 w-32"> <!-- Added fixed width -->
+                            <div class="text-right flex-shrink-0 w-32"> 
                                 <p class="text-lg font-bold ${timeColor}">${time} น.</p>
                                 <p class="text-sm font-medium ${timeColor}">${statusText}</p>
                             </div>
@@ -1317,7 +1282,6 @@
             else monitorFeedList.innerHTML = '<p class="text-gray-500 text-center p-4 text-lg">ยังไม่มีข้อมูลการเข้าเรียนสำหรับวันนี้</p>';
         }
 
-        // (NEW) Function to display the monitor summary
         function displayMonitorSummary(summary) {
             monitorSummary.innerHTML = `
                 <div class="bg-blue-100 p-4 rounded-lg shadow border border-blue-200">
@@ -1338,7 +1302,6 @@
                 </div>
             `;
         }
-
 
         // --- Page 5 History Search Logic ---
         
@@ -1413,17 +1376,14 @@
 
         historyExportPdfBtn.addEventListener('click', () => {
             showLoading('history-export-pdf', true);
-            
             try {
                 if (typeof window.jspdf === 'undefined' || typeof window.jspdf.jsPDF === 'undefined') {
                     showAlert('PDF Error', 'ไม่สามารถโหลดไลบรารี jsPDF ได้', 'error');
                     showLoading('history-export-pdf', false);
                     return;
                 }
-                
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
-                
                 const title = "รายงานการเข้าเรียน (ตามเงื่อนไข)";
                 const startDate = historyStartDate.value;
                 const endDate = historyEndDate.value;
@@ -1474,15 +1434,12 @@
                         fontStyle: 'bold'
                     }
                 });
-
                 const dateStr = new Date().toISOString().split('T')[0];
                 doc.save(`attendance_report_filtered_${dateStr}.pdf`);
-                
             } catch (e) {
                 console.error(e);
                 showAlert('PDF Error', 'เกิดข้อผิดพลาดในการสร้าง PDF: ' + e.message);
             }
-            
             showLoading('history-export-pdf', false);
         });
         
@@ -1497,7 +1454,6 @@
                 showAlert('ข้อมูลไม่ครบ', 'กรุณาเลือกวันที่เริ่มต้นและสิ้นสุด', 'warning');
                 return;
             }
-            
             showLoading('history-export-csv', true);
             const response = await callApi({ 
                 action: 'getFilteredExportData', 
@@ -1519,12 +1475,10 @@
                     link.setAttribute('href', url);
                     link.setAttribute('download', `attendance_export_filtered_${dateStr}.csv`);
                     link.style.visibility = 'hidden';
-                    
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
                     URL.revokeObjectURL(url);
-                    
                 } catch (e) {
                     showAlert('ส่งออกล้มเหลว', 'เกิดข้อผิดพลาดในการสร้างไฟล์: ' + e.message);
                 }
@@ -1533,7 +1487,7 @@
             }
         });
 
-        // --- (NEW) Page 6 Approval Logic ---
+        // --- Page 6 Approval Logic ---
 
         adminApprovalBtn.addEventListener('click', () => {
             showPage('approval-page');
@@ -1542,7 +1496,6 @@
 
         approvalBackBtn.addEventListener('click', () => {
             showPage('admin-page');
-            // Clear table data when going back
             approvalTableBody.innerHTML = ''; 
             approvalNoData.classList.add('hidden');
         });
@@ -1554,9 +1507,7 @@
             approvalTableBody.innerHTML = '';
             approvalNoData.classList.add('hidden');
 
-            // (NEW) This 'getUnapprovedList' action must be created in your Code.gs
             const response = await callApi({ action: 'getUnapprovedList' });
-            
             showLoading('approval-reload', false);
 
             if (response.success) {
@@ -1575,11 +1526,7 @@
 
             let tableHtml = '';
             for (const record of records) {
-                // record.recordId must be sent from your Code.gs (e.g., row number or a unique ID)
-                if (!record.recordId) {
-                    console.error("Record missing recordId:", record);
-                    continue; // Skip if no ID is provided
-                }
+                if (!record.recordId) continue;
                 
                 const timestamp = new Date(record.timestamp).toLocaleString('th-TH', {
                     hour: '2-digit', minute: '2-digit', second: '2-digit'
@@ -1611,31 +1558,25 @@
             approvalTableBody.innerHTML = tableHtml;
         }
 
-        // Use event delegation for approve buttons
         approvalTableBody.addEventListener('click', async (e) => {
             if (e.target && (e.target.classList.contains('approve-row-btn') || e.target.closest('.approve-row-btn'))) {
                 const button = e.target.closest('.approve-row-btn');
                 const recordId = button.dataset.recordId;
-                
-                if (button.disabled) return; // Already clicked
-
+                if (button.disabled) return; 
                 await approveRecord(recordId, button);
             }
         });
 
         async function approveRecord(recordId, buttonEl) {
-            // Show loading state on button
             buttonEl.disabled = true;
             buttonEl.innerHTML = '<div class="loader-small mx-auto"></div>';
 
-            // (NEW) This 'approveAttendance' action must be created in your Code.gs
             const response = await callApi({
                 action: 'approveAttendance',
                 recordId: recordId 
             });
 
             if (response.success) {
-                // Success: Change button state to "Approved"
                 buttonEl.innerHTML = `
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
@@ -1643,20 +1584,15 @@
                     <span>อนุมัติแล้ว</span>`;
                 buttonEl.classList.remove('bg-purple-600', 'hover:bg-purple-700');
                 buttonEl.classList.add('bg-green-500', 'cursor-not-allowed');
-                
-                // Optional: Remove the row after a short delay
                 setTimeout(() => {
                     document.getElementById(`approve-row-${recordId}`).style.opacity = '0.5';
                 }, 1000);
-
             } else {
-                // Failed: Reset button and show error
                 showAlert('อนุมัติไม่สำเร็จ', response.error || 'ไม่สามารถอนุมัติได้ โปรดลองอีกครั้ง');
                 buttonEl.disabled = false;
                 buttonEl.innerHTML = '<span>อนุมัติ</span>';
             }
         }
-
     </script>
 </body>
 </html>
