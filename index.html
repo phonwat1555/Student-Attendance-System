@@ -497,6 +497,11 @@
     <script>
         // --- URL ---
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxBQG0NjyO5p-8r79PSCOuBRqJBmGUX6Gd6PKAVw1Z7zcALP8higXf9uQtwR_SQIYhl/exec';
+        
+        // --- Geolocation Configuration ---
+        const TARGET_LAT = 14.965961419232366;
+        const TARGET_LNG = 102.0712661588505;
+        const MAX_DISTANCE_METERS = 200;
 
         // --- State ---
         let currentStudent = null;
@@ -580,6 +585,23 @@
         const approvalReloadLoader = document.getElementById('approval-reload-loader');
         const approvalTableBody = document.getElementById('approval-table-body');
         const approvalNoData = document.getElementById('approval-no-data');
+
+        // --- Helper Functions for Geolocation ---
+        function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; // Earth radius in meters
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
 
         // --- Core Functions ---
 
@@ -733,61 +755,112 @@
             if (event.key === 'Enter') { event.preventDefault(); searchBtn.click(); }
         });
 
-        // --- Page 2 Logic ---
+        // --- Page 2 Logic (MODIFIED FOR GEOFENCE) ---
         saveBtn.addEventListener('click', async () => {
             if (!selectedStatus) return;
+
+            // --- 1. Check Geolocation Support ---
+            if (!navigator.geolocation) {
+                showAlert('ไม่สามารถระบุพิกัดได้', 'เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง (GPS)', 'error');
+                return;
+            }
+
+            // Show loader while checking location
             showLoading('save', true);
-            
-            const now = new Date();
-            const selectedDateStr = attendanceDateInput.value;
-            let isLate = false;
 
-            const toYYYYMMDD = (d) => {
-                const year = d.getFullYear();
-                const month = String(d.getMonth() + 1).padStart(2, '0');
-                const day = String(d.getDate()).padStart(2, '0');
-                return `${year}-${month}-${day}`;
-            };
-            const todayStr = toYYYYMMDD(now);
+            // --- 2. Get Current Position ---
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
 
-            if (!selectedDateStr || selectedDateStr === todayStr) {
-                isLate = now.getHours() >= 9;
-            }
-            
-            let finalStatus = selectedStatus;
-            if (selectedStatus === 'มาเรียน' && isLate) {
-                finalStatus = 'มาเรียน (สาย)';
-            }
+                    // --- 3. Calculate Distance ---
+                    const distance = getDistanceFromLatLonInMeters(userLat, userLng, TARGET_LAT, TARGET_LNG);
+                    console.log(`User Location: ${userLat}, ${userLng}`);
+                    console.log(`Distance to target: ${distance} meters`);
 
-            let finalTimestamp;
-            if (selectedDateStr) {
-                const timeString = now.toTimeString().split(' ')[0];
-                finalTimestamp = `${selectedDateStr}T${timeString}`; 
-            } else {
-                finalTimestamp = now.toISOString();
-            }
+                    // --- 4. Check if within range ---
+                    if (distance > MAX_DISTANCE_METERS) {
+                        showLoading('save', false); // Stop loader
+                        showAlert(
+                            'อยู่นอกพื้นที่เช็คชื่อ',
+                            `คุณอยู่ห่างจากจุดเช็คชื่อ ${Math.round(distance)} เมตร\n(กำหนดให้ไม่เกิน ${MAX_DISTANCE_METERS} เมตร)\nกรุณาไปที่วิทยาลัยเพื่อบันทึกเวลาเรียน`,
+                            'warning'
+                        );
+                        return; // Stop execution
+                    }
 
-            const attendanceData = {
-                studentId: currentStudent.id,
-                name: currentStudent.name,
-                status: finalStatus,
-                reason: document.getElementById('reason').value.trim(),
-                dateString: finalTimestamp
-            };
-            
-            const response = await callApi({ action: 'recordAttendance', data: attendanceData });
-            
-            showLoading('save', false);
-            if (response.success) {
-                onRecordSaved(response, attendanceData);
-            } else {
-                // (Safety Net) Handle duplicate entry if UI bypass occurred
-                if (response.error === 'DUPLICATE_ENTRY' && response.data) {
-                    onDuplicateEntry(response.data);
-                } else {
-                    onSaveFailure({ message: response.error });
+                    // --- 5. Proceed with Saving (Inside Range) ---
+                    const now = new Date();
+                    const selectedDateStr = attendanceDateInput.value;
+                    let isLate = false;
+
+                    const toYYYYMMDD = (d) => {
+                        const year = d.getFullYear();
+                        const month = String(d.getMonth() + 1).padStart(2, '0');
+                        const day = String(d.getDate()).padStart(2, '0');
+                        return `${year}-${month}-${day}`;
+                    };
+                    const todayStr = toYYYYMMDD(now);
+
+                    if (!selectedDateStr || selectedDateStr === todayStr) {
+                        isLate = now.getHours() >= 9;
+                    }
+                    
+                    let finalStatus = selectedStatus;
+                    if (selectedStatus === 'มาเรียน' && isLate) {
+                        finalStatus = 'มาเรียน (สาย)';
+                    }
+
+                    let finalTimestamp;
+                    if (selectedDateStr) {
+                        const timeString = now.toTimeString().split(' ')[0];
+                        finalTimestamp = `${selectedDateStr}T${timeString}`; 
+                    } else {
+                        finalTimestamp = now.toISOString();
+                    }
+
+                    const attendanceData = {
+                        studentId: currentStudent.id,
+                        name: currentStudent.name,
+                        status: finalStatus,
+                        reason: document.getElementById('reason').value.trim(),
+                        dateString: finalTimestamp
+                    };
+                    
+                    const response = await callApi({ action: 'recordAttendance', data: attendanceData });
+                    
+                    showLoading('save', false);
+                    if (response.success) {
+                        onRecordSaved(response, attendanceData);
+                    } else {
+                        // (Safety Net) Handle duplicate entry if UI bypass occurred
+                        if (response.error === 'DUPLICATE_ENTRY' && response.data) {
+                            onDuplicateEntry(response.data);
+                        } else {
+                            onSaveFailure({ message: response.error });
+                        }
+                    }
+                },
+                (error) => {
+                    // --- Handle Geolocation Errors ---
+                    showLoading('save', false);
+                    let msg = 'ไม่สามารถดึงข้อมูลตำแหน่งได้';
+                    if (error.code === error.PERMISSION_DENIED) {
+                        msg = 'กรุณากด "อนุญาต" (Allow) ให้เว็บไซต์เข้าถึงตำแหน่งของคุณเพื่อบันทึกเวลาเรียน';
+                    } else if (error.code === error.POSITION_UNAVAILABLE) {
+                        msg = 'ไม่พบสัญญาณ GPS กรุณาลองใหม่อีกครั้ง';
+                    } else if (error.code === error.TIMEOUT) {
+                        msg = 'หมดเวลาในการค้นหาพิกัด กรุณาลองใหม่';
+                    }
+                    showAlert('ข้อผิดพลาดเรื่องตำแหน่ง', msg, 'error');
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
                 }
-            }
+            );
         });
 
         document.querySelectorAll('.attendance-btn').forEach(btn => {
