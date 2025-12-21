@@ -756,8 +756,70 @@
         });
 
         // --- Page 2 Logic (MODIFIED FOR GEOFENCE) ---
+
+        // Reusable function to submit attendance data
+        async function submitAttendance(lat = null, lng = null) {
+            const now = new Date();
+            const selectedDateStr = attendanceDateInput.value;
+            let isLate = false;
+
+            const toYYYYMMDD = (d) => {
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            };
+            const todayStr = toYYYYMMDD(now);
+
+            if (!selectedDateStr || selectedDateStr === todayStr) {
+                isLate = now.getHours() >= 9;
+            }
+            
+            let finalStatus = selectedStatus;
+            if (selectedStatus === 'มาเรียน' && isLate) {
+                finalStatus = 'มาเรียน (สาย)';
+            }
+
+            let finalTimestamp;
+            if (selectedDateStr) {
+                const timeString = now.toTimeString().split(' ')[0];
+                finalTimestamp = `${selectedDateStr}T${timeString}`; 
+            } else {
+                finalTimestamp = now.toISOString();
+            }
+
+            const attendanceData = {
+                studentId: currentStudent.id,
+                name: currentStudent.name,
+                status: finalStatus,
+                reason: document.getElementById('reason').value.trim(),
+                dateString: finalTimestamp
+            };
+            
+            const response = await callApi({ action: 'recordAttendance', data: attendanceData });
+            
+            showLoading('save', false);
+            if (response.success) {
+                onRecordSaved(response, attendanceData);
+            } else {
+                // (Safety Net) Handle duplicate entry if UI bypass occurred
+                if (response.error === 'DUPLICATE_ENTRY' && response.data) {
+                    onDuplicateEntry(response.data);
+                } else {
+                    onSaveFailure({ message: response.error });
+                }
+            }
+        }
+
         saveBtn.addEventListener('click', async () => {
             if (!selectedStatus) return;
+
+            // NEW: Bypass GPS check if status is "ลา" (Leave/Absent)
+            if (selectedStatus === 'ลา') {
+                showLoading('save', true);
+                await submitAttendance();
+                return;
+            }
 
             // --- 1. Check Geolocation Support ---
             if (!navigator.geolocation) {
@@ -784,63 +846,14 @@
                         showLoading('save', false); // Stop loader
                         showAlert(
                             'อยู่นอกพื้นที่เช็คชื่อ',
-                            `คุณอยู่ห่างจากจุดเช็คชื่อ ${Math.round(distance)} เมตร\n(กำหนดให้ไม่เกิน ${MAX_DISTANCE_METERS} เมตร)\nกรุณาไปที่ ศูนย์ ปวช.สกร. เพื่อบันทึกเวลาเรียน`,
+                            `คุณอยู่ห่างจากจุดเช็คชื่อ ${Math.round(distance)} เมตร\n(กำหนดให้ไม่เกิน ${MAX_DISTANCE_METERS} เมตร)\nกรุณาไปที่ ปวช.สกร. เพื่อบันทึกเวลาเรียน`,
                             'warning'
                         );
                         return; // Stop execution
                     }
 
                     // --- 5. Proceed with Saving (Inside Range) ---
-                    const now = new Date();
-                    const selectedDateStr = attendanceDateInput.value;
-                    let isLate = false;
-
-                    const toYYYYMMDD = (d) => {
-                        const year = d.getFullYear();
-                        const month = String(d.getMonth() + 1).padStart(2, '0');
-                        const day = String(d.getDate()).padStart(2, '0');
-                        return `${year}-${month}-${day}`;
-                    };
-                    const todayStr = toYYYYMMDD(now);
-
-                    if (!selectedDateStr || selectedDateStr === todayStr) {
-                        isLate = now.getHours() >= 9;
-                    }
-                    
-                    let finalStatus = selectedStatus;
-                    if (selectedStatus === 'มาเรียน' && isLate) {
-                        finalStatus = 'มาเรียน (สาย)';
-                    }
-
-                    let finalTimestamp;
-                    if (selectedDateStr) {
-                        const timeString = now.toTimeString().split(' ')[0];
-                        finalTimestamp = `${selectedDateStr}T${timeString}`; 
-                    } else {
-                        finalTimestamp = now.toISOString();
-                    }
-
-                    const attendanceData = {
-                        studentId: currentStudent.id,
-                        name: currentStudent.name,
-                        status: finalStatus,
-                        reason: document.getElementById('reason').value.trim(),
-                        dateString: finalTimestamp
-                    };
-                    
-                    const response = await callApi({ action: 'recordAttendance', data: attendanceData });
-                    
-                    showLoading('save', false);
-                    if (response.success) {
-                        onRecordSaved(response, attendanceData);
-                    } else {
-                        // (Safety Net) Handle duplicate entry if UI bypass occurred
-                        if (response.error === 'DUPLICATE_ENTRY' && response.data) {
-                            onDuplicateEntry(response.data);
-                        } else {
-                            onSaveFailure({ message: response.error });
-                        }
-                    }
+                    await submitAttendance(userLat, userLng);
                 },
                 (error) => {
                     // --- Handle Geolocation Errors ---
@@ -1669,4 +1682,3 @@
     </script>
 </body>
 </html>
-
