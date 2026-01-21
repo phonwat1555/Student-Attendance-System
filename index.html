@@ -66,7 +66,7 @@
         .monitor-card {
             animation: fadeIn 0.5s ease-out;
         }
-        /* (NEW) Loader for approve buttons */
+        /* Loader for approve buttons */
         .loader-small {
             border: 2px solid #f3f3f3;
             border-top: 2px solid #8B5CF6;
@@ -75,6 +75,45 @@
             height: 16px;
             animation: spin 1s linear infinite;
             display: inline-block;
+        }
+
+        /* Toggle Switch Styles */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #68D391;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #68D391;
+        }
+        .toggle-checkbox {
+            right: 0;
+            z-index: 1;
+            border-color: #E2E8F0;
+            cursor: pointer;
+            appearance: none;
+            border: 2px solid;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            background-color: white;
+            position: absolute;
+            top: 0;
+            right: auto;
+            left: 0;
+            transition: all 0.3s;
+        }
+        .toggle-label {
+            width: 3rem;
+            height: 1.5rem;
+            background-color: #CBD5E0;
+            border-radius: 9999px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .toggle-checkbox:checked {
+            left: 1.5rem;
+            border-color: #68D391;
         }
     </style>
 </head>
@@ -95,7 +134,30 @@
             <h1 class="text-3xl font-bold text-purple-800">ระบบบันทึกเข้าเรียน</h1>
             <p class="text-gray-600 mb-6 text-lg">ปวช.ศูนย์ส่งเสริมการเรียนรู้ระดับอำเภอเมืองนครราชสีมา</p>
             
-            <div class="border border-purple-200 rounded-lg p-6 text-left bg-purple-50 mt-6"> 
+            <!-- System CLOSED Message (Hidden by default) -->
+            <div id="system-closed-alert" class="hidden border border-red-200 rounded-lg p-6 bg-red-50 mt-6 shadow-md">
+                <div class="flex flex-col items-center justify-center text-red-600 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <h2 class="text-2xl font-bold">ระบบปิดให้บริการชั่วคราว</h2>
+                </div>
+                <div class="bg-white p-4 rounded border border-red-100 text-left">
+                    <p class="font-semibold text-gray-700 mb-1">สาเหตุ:</p>
+                    <p id="system-closed-reason" class="text-gray-600 text-lg">-</p>
+                </div>
+                <button id="refresh-status-btn" class="mt-4 text-sm text-red-500 hover:text-red-700 underline">
+                    ตรวจสอบสถานะอีกครั้ง
+                </button>
+            </div>
+
+            <!-- Login Form (Shown only if system is OPEN) -->
+            <div id="login-form-container" class="border border-purple-200 rounded-lg p-6 text-left bg-purple-50 mt-6 relative"> 
+                <!-- Loading overlay for checking status -->
+                <div id="initial-loading-overlay" class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10 rounded-lg">
+                    <div class="loader"></div>
+                </div>
+
                 <h2 class="text-2xl font-semibold text-center text-purple-700 mb-4 flex items-center justify-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
@@ -117,7 +179,7 @@
                 </div>
             </div>
             <p class="text-center text-sm text-gray-500 mt-8">
-                พัฒนาโดย : ศูนย์ส่งเสริมการเรียนรู้ระดับอำเภอเมืองนครราชสีมา
+                Copyright 2025 © ศูนย์ส่งเสริมการเรียนรู้ระดับอำเภอเมืองนครราชสีมา
             </p>
         </div>
 
@@ -205,7 +267,7 @@
             </button>
         </div>
 
-        <!-- Page 3: Admin Dashboard (Unchanged) -->
+        <!-- Page 3: Admin Dashboard (Modified) -->
         <div id="admin-page" class="page bg-white p-8 rounded-xl shadow-2xl transition-all border-t-4 border-purple-700">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-bold text-purple-800 flex items-center">
@@ -220,6 +282,38 @@
                     </svg>
                     <span>กลับหน้าหลัก</span>
                 </button>
+            </div>
+
+            <!-- New System Config Section -->
+            <div class="mb-6 bg-purple-50 p-6 rounded-lg border border-purple-200 shadow-sm">
+                <h3 class="text-xl font-semibold text-purple-800 mb-4 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    ตั้งค่าสถานะระบบ
+                </h3>
+                
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-gray-700 font-medium">สถานะการลงชื่อเข้าเรียน:</span>
+                    <div class="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in">
+                        <input type="checkbox" name="toggle" id="system-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                        <label for="system-toggle" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                    </div>
+                    <span id="system-status-text" class="text-sm font-bold text-green-600 ml-2">เปิดใช้งาน</span>
+                </div>
+
+                <div id="closed-reason-container" class="hidden mt-4">
+                    <label for="closed-reason-input" class="block text-sm font-medium text-gray-700 mb-1">ระบุสาเหตุที่ปิด (แสดงให้นักศึกษาเห็น):</label>
+                    <input type="text" id="closed-reason-input" class="w-full px-3 py-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="เช่น ปิดปรับปรุงระบบชั่วคราว, หมดเวลาลงชื่อเข้าเรียน">
+                </div>
+
+                <div class="mt-4 text-right">
+                    <button id="save-config-btn" class="bg-purple-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-purple-700 flex items-center justify-center space-x-2 ml-auto">
+                        <span id="save-config-text">บันทึกการตั้งค่า</span>
+                        <div id="save-config-loader" class="loader-small hidden"></div>
+                    </button>
+                </div>
             </div>
 
             <!-- Summary -->
@@ -497,11 +591,6 @@
     <script>
         // --- URL ---
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxBQG0NjyO5p-8r79PSCOuBRqJBmGUX6Gd6PKAVw1Z7zcALP8higXf9uQtwR_SQIYhl/exec';
-        
-        // --- Geolocation Configuration ---
-        const TARGET_LAT = 14.965961419232366;
-        const TARGET_LNG = 102.0712661588505;
-        const MAX_DISTANCE_METERS = 200;
 
         // --- State ---
         let currentStudent = null;
@@ -519,6 +608,11 @@
         const searchLoader = document.getElementById('search-loader');
         const searchBtnText = document.getElementById('search-btn-text');
         const adminAccessBtn = document.getElementById('admin-access-btn');
+        const systemClosedAlert = document.getElementById('system-closed-alert');
+        const systemClosedReason = document.getElementById('system-closed-reason');
+        const loginFormContainer = document.getElementById('login-form-container');
+        const refreshStatusBtn = document.getElementById('refresh-status-btn');
+        const initialLoadingOverlay = document.getElementById('initial-loading-overlay');
 
         // --- Page 2: Info ---
         const studentInfoDisplay = document.getElementById('student-info-display');
@@ -548,6 +642,15 @@
         const adminLiveMonitorBtn = document.getElementById('admin-live-monitor-btn');
         const adminHistoryBtn = document.getElementById('admin-history-btn'); 
         const adminApprovalBtn = document.getElementById('admin-approval-btn');
+        
+        // (NEW) Admin Config Elements
+        const systemToggle = document.getElementById('system-toggle');
+        const systemStatusText = document.getElementById('system-status-text');
+        const closedReasonContainer = document.getElementById('closed-reason-container');
+        const closedReasonInput = document.getElementById('closed-reason-input');
+        const saveConfigBtn = document.getElementById('save-config-btn');
+        const saveConfigText = document.getElementById('save-config-text');
+        const saveConfigLoader = document.getElementById('save-config-loader');
 
         // --- Page 4: Monitor ---
         const monitorPage = document.getElementById('monitor-page');
@@ -585,23 +688,6 @@
         const approvalReloadLoader = document.getElementById('approval-reload-loader');
         const approvalTableBody = document.getElementById('approval-table-body');
         const approvalNoData = document.getElementById('approval-no-data');
-
-        // --- Helper Functions for Geolocation ---
-        function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
-            const R = 6371e3; // Earth radius in meters
-            const dLat = deg2rad(lat2 - lat1);
-            const dLon = deg2rad(lon2 - lon1);
-            const a =
-                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            return R * c;
-        }
-
-        function deg2rad(deg) {
-            return deg * (Math.PI / 180);
-        }
 
         // --- Core Functions ---
 
@@ -671,6 +757,10 @@
                 approvalReloadLoader.classList.toggle('hidden', !isLoading);
                 approvalReloadText.classList.toggle('hidden', isLoading);
                 approvalReloadBtn.disabled = isLoading;
+            } else if (buttonType === 'save-config') {
+                saveConfigLoader.classList.toggle('hidden', !isLoading);
+                saveConfigText.classList.toggle('hidden', isLoading);
+                saveConfigBtn.disabled = isLoading;
             }
         }
 
@@ -728,6 +818,46 @@
             timeEl.textContent = "เวลา " + now.toLocaleTimeString('th-TH', timeOptions);
         }
         
+        // --- Initialization Logic (Check Status) ---
+
+        // Check system status immediately on load
+        document.addEventListener('DOMContentLoaded', () => {
+             checkSystemStatus();
+        });
+
+        refreshStatusBtn.addEventListener('click', checkSystemStatus);
+
+        async function checkSystemStatus() {
+            // Show loading overlay
+            if (initialLoadingOverlay) initialLoadingOverlay.classList.remove('hidden');
+            
+            // Try to get status. If API doesn't support it yet, default to open.
+            const response = await callApi({ action: 'getSystemStatus' });
+            
+            if (initialLoadingOverlay) initialLoadingOverlay.classList.add('hidden');
+
+            if (response.success) {
+                const isOpen = response.isOpen; // true/false
+                const reason = response.reason || 'ปิดปรับปรุงระบบชั่วคราว';
+
+                if (!isOpen) {
+                    // System CLOSED
+                    systemClosedAlert.classList.remove('hidden');
+                    loginFormContainer.classList.add('hidden');
+                    systemClosedReason.textContent = reason;
+                } else {
+                    // System OPEN
+                    systemClosedAlert.classList.add('hidden');
+                    loginFormContainer.classList.remove('hidden');
+                }
+            } else {
+                // If error (or function not found in GAS), default to OPEN to not break the app
+                console.warn('Could not check system status, defaulting to OPEN.', response.error);
+                systemClosedAlert.classList.add('hidden');
+                loginFormContainer.classList.remove('hidden');
+            }
+        }
+
         // --- Page 1 Logic ---
         
         searchBtn.addEventListener('click', async () => {
@@ -755,10 +885,11 @@
             if (event.key === 'Enter') { event.preventDefault(); searchBtn.click(); }
         });
 
-        // --- Page 2 Logic (MODIFIED FOR GEOFENCE) ---
-
-        // Reusable function to submit attendance data
-        async function submitAttendance(lat = null, lng = null) {
+        // --- Page 2 Logic ---
+        saveBtn.addEventListener('click', async () => {
+            if (!selectedStatus) return;
+            showLoading('save', true);
+            
             const now = new Date();
             const selectedDateStr = attendanceDateInput.value;
             let isLate = false;
@@ -809,71 +940,6 @@
                     onSaveFailure({ message: response.error });
                 }
             }
-        }
-
-        saveBtn.addEventListener('click', async () => {
-            if (!selectedStatus) return;
-
-            // NEW: Bypass GPS check if status is "ลา" (Leave/Absent)
-            if (selectedStatus === 'ลา') {
-                showLoading('save', true);
-                await submitAttendance();
-                return;
-            }
-
-            // --- 1. Check Geolocation Support ---
-            if (!navigator.geolocation) {
-                showAlert('ไม่สามารถระบุพิกัดได้', 'เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง (GPS)', 'error');
-                return;
-            }
-
-            // Show loader while checking location
-            showLoading('save', true);
-
-            // --- 2. Get Current Position ---
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const userLat = position.coords.latitude;
-                    const userLng = position.coords.longitude;
-
-                    // --- 3. Calculate Distance ---
-                    const distance = getDistanceFromLatLonInMeters(userLat, userLng, TARGET_LAT, TARGET_LNG);
-                    console.log(`User Location: ${userLat}, ${userLng}`);
-                    console.log(`Distance to target: ${distance} meters`);
-
-                    // --- 4. Check if within range ---
-                    if (distance > MAX_DISTANCE_METERS) {
-                        showLoading('save', false); // Stop loader
-                        showAlert(
-                            'อยู่นอกพื้นที่เช็คชื่อ',
-                            `คุณอยู่ห่างจากจุดเช็คชื่อ ${Math.round(distance)} เมตร\n(กำหนดให้ไม่เกิน ${MAX_DISTANCE_METERS} เมตร)\nกรุณาไปที่ ปวช.สกร. เพื่อบันทึกเวลาเรียน`,
-                            'warning'
-                        );
-                        return; // Stop execution
-                    }
-
-                    // --- 5. Proceed with Saving (Inside Range) ---
-                    await submitAttendance(userLat, userLng);
-                },
-                (error) => {
-                    // --- Handle Geolocation Errors ---
-                    showLoading('save', false);
-                    let msg = 'ไม่สามารถดึงข้อมูลตำแหน่งได้';
-                    if (error.code === error.PERMISSION_DENIED) {
-                        msg = 'กรุณากด "อนุญาต" (Allow) ให้เว็บไซต์เข้าถึงตำแหน่งของคุณเพื่อบันทึกเวลาเรียน';
-                    } else if (error.code === error.POSITION_UNAVAILABLE) {
-                        msg = 'ไม่พบสัญญาณ GPS กรุณาลองใหม่อีกครั้ง';
-                    } else if (error.code === error.TIMEOUT) {
-                        msg = 'หมดเวลาในการค้นหาพิกัด กรุณาลองใหม่';
-                    }
-                    showAlert('ข้อผิดพลาดเรื่องตำแหน่ง', msg, 'error');
-                },
-                {
-                    enableHighAccuracy: true,
-                    timeout: 10000,
-                    maximumAge: 0
-                }
-            );
         });
 
         document.querySelectorAll('.attendance-btn').forEach(btn => {
@@ -931,7 +997,7 @@
                 attendanceControls.classList.add('hidden');
                 attendanceDateInput.disabled = true; // Lock date input
 
-                // (NEW) Trigger SweetAlert Popup immediately
+                // Trigger SweetAlert Popup immediately
                 Swal.fire({
                     icon: 'info',
                     title: 'บันทึกข้อมูลแล้ว',
@@ -1081,7 +1147,7 @@
             });
         }
         
-        // (NEW) Alert for duplicate entry response
+        // Alert for duplicate entry response
         function onDuplicateEntry(record) {
             const recordDate = new Date(record.timestamp);
             const dateStr = recordDate.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -1152,16 +1218,53 @@
                 }
             });
         });
-        
-        function setHistoryDefaultDates() {
-            const today = new Date().toISOString().split('T')[0];
-            historyStartDate.value = today;
-            historyEndDate.value = today;
-        }
+
+        // (NEW) Admin Toggle Logic
+        systemToggle.addEventListener('change', (e) => {
+            const isOpen = e.target.checked;
+            systemStatusText.textContent = isOpen ? 'เปิดใช้งาน' : 'ปิดระบบชั่วคราว';
+            systemStatusText.className = isOpen ? 'text-sm font-bold text-green-600 ml-2' : 'text-sm font-bold text-red-600 ml-2';
+            
+            if (isOpen) {
+                closedReasonContainer.classList.add('hidden');
+            } else {
+                closedReasonContainer.classList.remove('hidden');
+            }
+        });
+
+        saveConfigBtn.addEventListener('click', async () => {
+            const isOpen = systemToggle.checked;
+            const reason = closedReasonInput.value.trim();
+
+            if (!isOpen && !reason) {
+                showAlert('ข้อมูลไม่ครบ', 'กรุณาระบุสาเหตุที่ปิดระบบ', 'warning');
+                return;
+            }
+
+            showLoading('save-config', true);
+            const response = await callApi({
+                action: 'setSystemStatus',
+                isOpen: isOpen,
+                reason: reason
+            });
+            showLoading('save-config', false);
+
+            if (response.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'บันทึกสำเร็จ',
+                    text: 'อัปเดตสถานะระบบเรียบร้อยแล้ว',
+                    timer: 1500
+                });
+            } else {
+                showAlert('ผิดพลาด', 'ไม่สามารถบันทึกการตั้งค่าได้: ' + (response.error || 'โปรดตรวจสอบ Code.gs'));
+            }
+        });
 
         async function loadAdminDashboardData() {
             const today = new Date().toISOString().split('T')[0];
             
+            // Fetch summary stats
             adminSummary.innerHTML = `
                 <div class="bg-gray-100 p-4 rounded-lg shadow border border-gray-200 animate-pulse">
                     <p class="text-sm text-gray-700 font-semibold">กำลังโหลด...</p>
@@ -1182,6 +1285,27 @@
             } else {
                 adminSummary.innerHTML = '<p class="text-red-500 col-span-4">ไม่สามารถโหลดข้อมูลสรุปได้</p>';
             }
+
+            // (NEW) Fetch system status for admin toggle
+            const statusRes = await callApi({ action: 'getSystemStatus' });
+            if (statusRes.success) {
+                const isOpen = statusRes.isOpen;
+                const reason = statusRes.reason || '';
+
+                systemToggle.checked = isOpen;
+                systemStatusText.textContent = isOpen ? 'เปิดใช้งาน' : 'ปิดระบบชั่วคราว';
+                systemStatusText.className = isOpen ? 'text-sm font-bold text-green-600 ml-2' : 'text-sm font-bold text-red-600 ml-2';
+                closedReasonInput.value = reason;
+                
+                if (isOpen) closedReasonContainer.classList.add('hidden');
+                else closedReasonContainer.classList.remove('hidden');
+            }
+        }
+        
+        function setHistoryDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            historyStartDate.value = today;
+            historyEndDate.value = today;
         }
         
         function displayAdminSummary(summary) {
@@ -1205,7 +1329,7 @@
             `;
         }
 
-        adminBackBtn.addEventListener('click', () => { showPage('search-page'); });
+        adminBackBtn.addEventListener('click', () => { showPage('search-page'); checkSystemStatus(); }); // Re-check status when going back
         
         adminHistoryBtn.addEventListener('click', () => {
             showPage('history-page');
