@@ -77,7 +77,7 @@
             display: inline-block;
         }
 
-        /* Toggle Switch Styles */
+        /* --- Toggle Switch Styles (NEW) --- */
         .toggle-checkbox:checked {
             right: 0;
             border-color: #68D391;
@@ -134,7 +134,7 @@
             <h1 class="text-3xl font-bold text-purple-800">ระบบบันทึกเข้าเรียน</h1>
             <p class="text-gray-600 mb-6 text-lg">ปวช.ศูนย์ส่งเสริมการเรียนรู้ระดับอำเภอเมืองนครราชสีมา</p>
             
-            <!-- System CLOSED Message (Hidden by default) -->
+            <!-- (NEW) System CLOSED Message (Hidden by default) -->
             <div id="system-closed-alert" class="hidden border border-red-200 rounded-lg p-6 bg-red-50 mt-6 shadow-md">
                 <div class="flex flex-col items-center justify-center text-red-600 mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -151,7 +151,7 @@
                 </button>
             </div>
 
-            <!-- Login Form (Shown only if system is OPEN) -->
+            <!-- Login Form Container (Modified to be hideable) -->
             <div id="login-form-container" class="border border-purple-200 rounded-lg p-6 text-left bg-purple-50 mt-6 relative"> 
                 <!-- Loading overlay for checking status -->
                 <div id="initial-loading-overlay" class="absolute inset-0 bg-white bg-opacity-80 flex items-center justify-center z-10 rounded-lg">
@@ -179,7 +179,7 @@
                 </div>
             </div>
             <p class="text-center text-sm text-gray-500 mt-8">
-                Copyright 2025 © ศูนย์ส่งเสริมการเรียนรู้ระดับอำเภอเมืองนครราชสีมา
+                Copyright 2025 © ศูนย์ส่งเสริมการเรียนรู้ระดับอำเภอเมืองนครราชสีมา V.2.0.1
             </p>
         </div>
 
@@ -267,7 +267,7 @@
             </button>
         </div>
 
-        <!-- Page 3: Admin Dashboard (Modified) -->
+        <!-- Page 3: Admin Dashboard -->
         <div id="admin-page" class="page bg-white p-8 rounded-xl shadow-2xl transition-all border-t-4 border-purple-700">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-bold text-purple-800 flex items-center">
@@ -284,7 +284,7 @@
                 </button>
             </div>
 
-            <!-- New System Config Section -->
+            <!-- (NEW) System Config Section -->
             <div class="mb-6 bg-purple-50 p-6 rounded-lg border border-purple-200 shadow-sm">
                 <h3 class="text-xl font-semibold text-purple-800 mb-4 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -375,7 +375,7 @@
             </div>
         </div>
         
-        <!-- Page 4: Live Monitor (MODIFIED) -->
+        <!-- Page 4: Live Monitor -->
         <div id="monitor-page" class="page bg-white p-8 rounded-xl shadow-2xl transition-all border-t-4 border-blue-700">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-3xl font-bold text-blue-800 flex items-center">
@@ -393,7 +393,7 @@
                 </button>
             </div>
 
-            <!-- (NEW) Live Monitor Summary Dashboard -->
+            <!-- Live Monitor Summary Dashboard -->
             <div class="mb-4">
                 <h3 class="text-xl font-semibold text-gray-700 mb-3">สรุปข้อมูล (วันนี้ - Real-time)</h3>
                 <div id="monitor-summary" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
@@ -432,7 +432,7 @@
             </div>
         </div>
         
-        <!-- Page 5: History Search Page (Unchanged) -->
+        <!-- Page 5: History Search Page -->
         <div id="history-page" class="page bg-white p-8 rounded-xl shadow-2xl transition-all border-t-4 border-indigo-700">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-3xl font-bold text-indigo-800 flex items-center">
@@ -591,6 +591,11 @@
     <script>
         // --- URL ---
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxBQG0NjyO5p-8r79PSCOuBRqJBmGUX6Gd6PKAVw1Z7zcALP8higXf9uQtwR_SQIYhl/exec';
+        
+        // --- Geolocation Configuration ---
+        const TARGET_LAT = 14.965961419232366;
+        const TARGET_LNG = 102.0712661588505;
+        const MAX_DISTANCE_METERS = 200;
 
         // --- State ---
         let currentStudent = null;
@@ -608,6 +613,7 @@
         const searchLoader = document.getElementById('search-loader');
         const searchBtnText = document.getElementById('search-btn-text');
         const adminAccessBtn = document.getElementById('admin-access-btn');
+        // (NEW) System Closed Elements
         const systemClosedAlert = document.getElementById('system-closed-alert');
         const systemClosedReason = document.getElementById('system-closed-reason');
         const loginFormContainer = document.getElementById('login-form-container');
@@ -628,7 +634,6 @@
         const attendanceDateInput = document.getElementById('attendance-date-input');
         const showHistoryBtn = document.getElementById('show-history-btn');
         
-        // (NEW) Elements for page 2 lock
         const attendanceControls = document.getElementById('attendance-controls'); 
         const attendanceLockMessage = document.getElementById('attendance-lock-message');
         const attendanceLockDetails = document.getElementById('attendance-lock-details');
@@ -642,7 +647,6 @@
         const adminLiveMonitorBtn = document.getElementById('admin-live-monitor-btn');
         const adminHistoryBtn = document.getElementById('admin-history-btn'); 
         const adminApprovalBtn = document.getElementById('admin-approval-btn');
-        
         // (NEW) Admin Config Elements
         const systemToggle = document.getElementById('system-toggle');
         const systemStatusText = document.getElementById('system-status-text');
@@ -688,6 +692,23 @@
         const approvalReloadLoader = document.getElementById('approval-reload-loader');
         const approvalTableBody = document.getElementById('approval-table-body');
         const approvalNoData = document.getElementById('approval-no-data');
+
+        // --- Helper Functions for Geolocation ---
+        function getDistanceFromLatLonInMeters(lat1, lon1, lat2, lon2) {
+            const R = 6371e3; // Earth radius in meters
+            const dLat = deg2rad(lat2 - lat1);
+            const dLon = deg2rad(lon2 - lon1);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        function deg2rad(deg) {
+            return deg * (Math.PI / 180);
+        }
 
         // --- Core Functions ---
 
@@ -817,8 +838,8 @@
             dateEl.textContent = now.toLocaleDateString('th-TH', dateOptions);
             timeEl.textContent = "เวลา " + now.toLocaleTimeString('th-TH', timeOptions);
         }
-        
-        // --- Initialization Logic (Check Status) ---
+
+        // --- Initialization Logic (Check System Status) ---
 
         // Check system status immediately on load
         document.addEventListener('DOMContentLoaded', () => {
@@ -831,7 +852,7 @@
             // Show loading overlay
             if (initialLoadingOverlay) initialLoadingOverlay.classList.remove('hidden');
             
-            // Try to get status. If API doesn't support it yet, default to open.
+            // Try to get status
             const response = await callApi({ action: 'getSystemStatus' });
             
             if (initialLoadingOverlay) initialLoadingOverlay.classList.add('hidden');
@@ -857,7 +878,7 @@
                 loginFormContainer.classList.remove('hidden');
             }
         }
-
+        
         // --- Page 1 Logic ---
         
         searchBtn.addEventListener('click', async () => {
@@ -885,11 +906,10 @@
             if (event.key === 'Enter') { event.preventDefault(); searchBtn.click(); }
         });
 
-        // --- Page 2 Logic ---
-        saveBtn.addEventListener('click', async () => {
-            if (!selectedStatus) return;
-            showLoading('save', true);
-            
+        // --- Page 2 Logic (MERGED: Geolocation + Attendance) ---
+
+        // Reusable function to submit attendance data
+        async function submitAttendance(lat = null, lng = null) {
             const now = new Date();
             const selectedDateStr = attendanceDateInput.value;
             let isLate = false;
@@ -940,6 +960,71 @@
                     onSaveFailure({ message: response.error });
                 }
             }
+        }
+
+        saveBtn.addEventListener('click', async () => {
+            if (!selectedStatus) return;
+
+            // NEW: Bypass GPS check if status is "ลา" (Leave/Absent)
+            if (selectedStatus === 'ลา') {
+                showLoading('save', true);
+                await submitAttendance();
+                return;
+            }
+
+            // --- 1. Check Geolocation Support ---
+            if (!navigator.geolocation) {
+                showAlert('ไม่สามารถระบุพิกัดได้', 'เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง (GPS)', 'error');
+                return;
+            }
+
+            // Show loader while checking location
+            showLoading('save', true);
+
+            // --- 2. Get Current Position ---
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+
+                    // --- 3. Calculate Distance ---
+                    const distance = getDistanceFromLatLonInMeters(userLat, userLng, TARGET_LAT, TARGET_LNG);
+                    console.log(`User Location: ${userLat}, ${userLng}`);
+                    console.log(`Distance to target: ${distance} meters`);
+
+                    // --- 4. Check if within range ---
+                    if (distance > MAX_DISTANCE_METERS) {
+                        showLoading('save', false); // Stop loader
+                        showAlert(
+                            'อยู่นอกพื้นที่เช็คชื่อ',
+                            `คุณอยู่ห่างจากจุดเช็คชื่อ ${Math.round(distance)} เมตร\n(กำหนดให้ไม่เกิน ${MAX_DISTANCE_METERS} เมตร)\nกรุณาไปที่วิทยาลัยเพื่อบันทึกเวลาเรียน`,
+                            'warning'
+                        );
+                        return; // Stop execution
+                    }
+
+                    // --- 5. Proceed with Saving (Inside Range) ---
+                    await submitAttendance(userLat, userLng);
+                },
+                (error) => {
+                    // --- Handle Geolocation Errors ---
+                    showLoading('save', false);
+                    let msg = 'ไม่สามารถดึงข้อมูลตำแหน่งได้';
+                    if (error.code === error.PERMISSION_DENIED) {
+                        msg = 'กรุณากด "อนุญาต" (Allow) ให้เว็บไซต์เข้าถึงตำแหน่งของคุณเพื่อบันทึกเวลาเรียน';
+                    } else if (error.code === error.POSITION_UNAVAILABLE) {
+                        msg = 'ไม่พบสัญญาณ GPS กรุณาลองใหม่อีกครั้ง';
+                    } else if (error.code === error.TIMEOUT) {
+                        msg = 'หมดเวลาในการค้นหาพิกัด กรุณาลองใหม่';
+                    }
+                    showAlert('ข้อผิดพลาดเรื่องตำแหน่ง', msg, 'error');
+                },
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
         });
 
         document.querySelectorAll('.attendance-btn').forEach(btn => {
@@ -997,7 +1082,7 @@
                 attendanceControls.classList.add('hidden');
                 attendanceDateInput.disabled = true; // Lock date input
 
-                // Trigger SweetAlert Popup immediately
+                // (NEW) Trigger SweetAlert Popup immediately
                 Swal.fire({
                     icon: 'info',
                     title: 'บันทึกข้อมูลแล้ว',
@@ -1147,7 +1232,7 @@
             });
         }
         
-        // Alert for duplicate entry response
+        // (NEW) Alert for duplicate entry response
         function onDuplicateEntry(record) {
             const recordDate = new Date(record.timestamp);
             const dateStr = recordDate.toLocaleDateString('th-TH', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -1218,7 +1303,7 @@
                 }
             });
         });
-
+        
         // (NEW) Admin Toggle Logic
         systemToggle.addEventListener('change', (e) => {
             const isOpen = e.target.checked;
@@ -1261,10 +1346,15 @@
             }
         });
 
+        function setHistoryDefaultDates() {
+            const today = new Date().toISOString().split('T')[0];
+            historyStartDate.value = today;
+            historyEndDate.value = today;
+        }
+
         async function loadAdminDashboardData() {
             const today = new Date().toISOString().split('T')[0];
             
-            // Fetch summary stats
             adminSummary.innerHTML = `
                 <div class="bg-gray-100 p-4 rounded-lg shadow border border-gray-200 animate-pulse">
                     <p class="text-sm text-gray-700 font-semibold">กำลังโหลด...</p>
@@ -1302,12 +1392,6 @@
             }
         }
         
-        function setHistoryDefaultDates() {
-            const today = new Date().toISOString().split('T')[0];
-            historyStartDate.value = today;
-            historyEndDate.value = today;
-        }
-        
         function displayAdminSummary(summary) {
             adminSummary.innerHTML = `
                 <div class="bg-blue-100 p-4 rounded-lg shadow border border-blue-200">
@@ -1329,7 +1413,7 @@
             `;
         }
 
-        adminBackBtn.addEventListener('click', () => { showPage('search-page'); checkSystemStatus(); }); // Re-check status when going back
+        adminBackBtn.addEventListener('click', () => { showPage('search-page'); checkSystemStatus(); }); // Reload status when going back
         
         adminHistoryBtn.addEventListener('click', () => {
             showPage('history-page');
